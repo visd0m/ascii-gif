@@ -1,0 +1,18 @@
+[package]
+name = "ascii-gif"
+version = "0.1.0"
+authors = ["Domenico Visconti <domenico.visconti@prima.it>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+hyper = "0.13.7"
+chrono = {version = "0.4.13", features = ["serde"]}
+serde_json = "1.0.56"
+serde = {version = "1.0.114", features = ["derive"]}
+hyper-tls = "0.4.3"
+tokio = {version = "0.2.22", features = ["macros"]}
+bytes = "0.5.6"
+gif = "0.10.3"
+dotenv = "0.15.0"
