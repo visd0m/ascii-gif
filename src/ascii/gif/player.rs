@@ -71,26 +71,15 @@ impl Player {
     }
 
     fn update_display_buffer(&mut self, top: u16, left: u16, new_buffer: &Vec<Symbol>, width: u16) {
-        // dbg!(top);
-        // dbg!(left);
-        // dbg!(width);
-        // dbg!(self.width);
-        // dbg!(new_buffer.len());
-
         new_buffer
             .chunks(width as usize)
             .enumerate()
             .for_each(|(line_index, line)| {
                 line.iter().enumerate().for_each(|(column_index, symbol)| {
-                    // dbg!(column_index);
-                    // dbg!(line_index);
-
                     let position: usize = (((top) as usize + line_index)
                         * self.canvas_width as usize)
                         + ((left) as usize)
                         + (column_index as usize);
-
-                    // dbg!(position);
 
                     if symbol.alpha == 255 {
                         self.display_buffer[position as usize] = symbol.clone();

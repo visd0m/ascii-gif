@@ -28,7 +28,6 @@ impl<'a> Tenor<'a> {
             BASE_URL, search, self.apikey, limit
         );
 
-        dbg!(&url);
         let search = serde_json::from_reader(get(&self.http_client, &url).await?)?;
         Ok(search)
     }
@@ -39,7 +38,6 @@ impl<'a> Tenor<'a> {
             BASE_URL, q, self.apikey, limit
         );
 
-        dbg!(&url);
         let search = serde_json::from_reader(get(&self.http_client, &url).await?)?;
         Ok(search)
     }

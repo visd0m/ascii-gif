@@ -27,7 +27,6 @@ impl<'a> Giphy<'a> {
             BASE_URL, self.apikey, tag
         );
 
-        dbg!(&url);
         let random = serde_json::from_reader(get(&self.http_client, &url).await?)?;
         Ok(random)
     }
@@ -42,7 +41,6 @@ impl<'a> Giphy<'a> {
             BASE_URL, self.apikey, search, limit
         );
 
-        dbg!(&url);
         let search = serde_json::from_reader(get(&self.http_client, &url).await?)?;
         Ok(search)
     }

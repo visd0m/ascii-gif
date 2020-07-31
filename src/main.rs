@@ -21,8 +21,7 @@ async fn main() {
     let tenor_api_key = env::var("TENOR_API_KEY").expect("Error loading tenor apikey");
 
     let args: Vec<String> = env::args().collect();
-    dbg!(&args);
-    debug_assert_eq!(2, args.len());
+    debug_asserts_eq!(2, args.len());
     let q = args.get(1).unwrap();
 
     let (w, h) = term_size::dimensions().unwrap();
@@ -63,7 +62,6 @@ async fn main() {
 
     loop {
         player.play(&ascii_gif);
-        dbg!(&url);
     }
 }
 
