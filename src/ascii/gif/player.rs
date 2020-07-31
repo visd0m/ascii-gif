@@ -1,22 +1,21 @@
 use crate::ascii::frame::AsciiFrame;
 use crate::ascii::gif::AsciiGif;
-use crate::ascii::symbol::Symbol;
-use std::cmp::min;
+use crate::ascii::symbol::{to_string, AsciiSymbol};
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 use std::thread::sleep;
 use tokio::time::Duration;
 
-pub struct Player {
+pub struct AsciiGifPlayer {
     pub max_lines: u16,
     pub max_columns: u16,
     pub canvas_width: u16,
     pub canvas_height: u16,
-    pub display_buffer: Vec<Symbol>,
+    pub display_buffer: Vec<AsciiSymbol>,
 }
 
-impl Player {
+impl AsciiGifPlayer {
     pub fn new(max_lines: u16, max_columns: u16) -> Self {
         Self {
             max_columns,
@@ -24,7 +23,7 @@ impl Player {
             canvas_width: max_columns,
             canvas_height: max_lines,
             display_buffer: vec![
-                Symbol {
+                AsciiSymbol {
                     symbol: " ".to_string(),
                     alpha: 0
                 };
@@ -37,7 +36,7 @@ impl Player {
         self.canvas_width = gif.width;
         self.canvas_height = gif.height;
         self.display_buffer = vec![
-            Symbol {
+            AsciiSymbol {
                 symbol: " ".to_string(),
                 alpha: 0
             };
@@ -57,20 +56,25 @@ impl Player {
     pub fn display(&self) {
         print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
 
-        let to_display = self
-            .display_buffer
-            .chunks(self.canvas_width as usize)
-            .map(|x| x.iter().map(|s| s.symbol.clone()).collect::<Vec<String>>())
-            .map(|x| x[0..min(self.max_columns as usize, self.canvas_width as usize)].to_vec())
-            .map(|x| format!("{}", x.join("")))
-            .take(min(self.max_lines as usize, self.canvas_height as usize))
-            .collect::<Vec<String>>()
-            .join("\n");
-
-        println!("{}", to_display);
+        println!(
+            "{}",
+            to_string(
+                &self.display_buffer,
+                self.canvas_height as usize,
+                self.canvas_width as usize,
+                self.max_lines as usize,
+                self.max_columns as usize,
+            )
+        );
     }
 
-    fn update_display_buffer(&mut self, top: u16, left: u16, new_buffer: &Vec<Symbol>, width: u16) {
+    fn update_display_buffer(
+        &mut self,
+        top: u16,
+        left: u16,
+        new_buffer: &Vec<AsciiSymbol>,
+        width: u16,
+    ) {
         new_buffer
             .chunks(width as usize)
             .enumerate()
@@ -91,6 +95,6 @@ impl Player {
 
 fn debug_frame(index: u16, frame: &AsciiFrame) {
     let ascii_frame_as_string: String = frame.to_string();
-    let mut file = File::create(Path::new(&format!("./frame_{}.txt", index))).unwrap();
+    let mut file = File::create(Path::new(&format!("./debug_frames/frame_{}.txt", index))).unwrap();
     file.write(ascii_frame_as_string.as_bytes()).unwrap();
 }

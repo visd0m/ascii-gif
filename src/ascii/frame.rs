@@ -1,11 +1,11 @@
-use crate::ascii::symbol::Symbol;
+use crate::ascii::symbol::{to_string, AsciiSymbol};
 use gif::Frame;
 use std::borrow::Cow;
 
 pub struct AsciiFrame {
     pub width: u16,
     pub height: u16,
-    pub buffer: Vec<Symbol>,
+    pub buffer: Vec<AsciiSymbol>,
     pub delay: u16,
     pub top: u16,
     pub left: u16,
@@ -26,19 +26,20 @@ impl From<&Frame<'_>> for AsciiFrame {
 
 impl AsciiFrame {
     pub fn to_string(&self) -> String {
-        self.buffer
-            .chunks(self.width as usize)
-            .map(|x| x.iter().map(|s| s.symbol.clone()).collect::<Vec<String>>())
-            .map(|x| format!("{}", x.join("")))
-            .collect::<Vec<String>>()
-            .join("\n")
+        to_string(
+            &self.buffer,
+            self.height as usize,
+            self.width as usize,
+            self.height as usize,
+            self.width as usize,
+        )
     }
 }
 
-fn to_text_frame(buffer: &Cow<[u8]>) -> Vec<Symbol> {
+fn to_text_frame(buffer: &Cow<[u8]>) -> Vec<AsciiSymbol> {
     buffer
         .chunks(4)
         .map(|bytes| (bytes[0], bytes[1], bytes[2], bytes[3]))
-        .map(|rgba| Symbol::from(rgba))
-        .collect::<Vec<Symbol>>()
+        .map(|rgba| AsciiSymbol::from(rgba))
+        .collect::<Vec<AsciiSymbol>>()
 }
