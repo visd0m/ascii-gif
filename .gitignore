@@ -1,5 +1,4 @@
 /target
-.env
 .idea
 *.iml
 .gradle
