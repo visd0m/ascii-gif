@@ -7,7 +7,7 @@
 
 ![Alt Text](https://github.com/visd0m/ascii-gif/blob/master/tty.gif)
 
-#### Still a workin progress project
+#### Still a "work in progress" project
 
 ---
 todos
