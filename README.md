@@ -14,7 +14,7 @@ cargo run "pikachu" --tenor
 
 ```bash
 # retrieve a gif using giphy random api querying "pikachu" 
-cargo run "pikachu" --giphy
+cargo run "homer simpson" --giphy
 ```
 ![Alt Text](https://github.com/visd0m/ascii-gif/blob/master/example_homer_giphy.gif)
 
