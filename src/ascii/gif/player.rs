@@ -40,7 +40,7 @@ impl AsciiGifPlayer {
                 symbol: " ".to_string(),
                 alpha: 0
             };
-            (gif.width * gif.height) as usize
+            (gif.width as u32 * gif.height as u32) as usize
         ];
         // clear screen
         print!("{esc}[2J", esc = 27 as char);
