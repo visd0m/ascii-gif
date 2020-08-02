@@ -5,16 +5,18 @@
 - display the gif on the command line 
 - enjoy!
 
-![Alt Text](https://github.com/visd0m/ascii-gif/blob/master/tty.gif)
-
 #### Examples
 ```bash
 # retrieve a gif using tenor random api querying "pikachu" 
 cargo run "pikachu" --tenor
+```
+![Alt Text](https://github.com/visd0m/ascii-gif/blob/master/tenor.gif)
 
+```bash
 # retrieve a gif using giphy random api querying "pikachu" 
 cargo run "pikachu" --giphy
 ```
+![Alt Text](https://github.com/visd0m/ascii-gif/blob/master/giphy.gif)
 
 #### Still a "work in progress" project
 
