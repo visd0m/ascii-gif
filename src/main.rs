@@ -63,7 +63,10 @@ async fn from_giphy(
         .await
         .expect("no results fodun using giphy")
         .data
+        .images
+        .preview_gif
         .url
+        .expect("no url for preview_gif using giphy")
         .clone()
 }
 
