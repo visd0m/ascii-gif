@@ -7,6 +7,15 @@
 
 ![Alt Text](https://github.com/visd0m/ascii-gif/blob/master/tty.gif)
 
+#### Examples
+```bash
+# retrieve a gif using tenor random api querying "pikachu" 
+cargo run "pikachu" --tenor
+
+# retrieve a gif using giphy random api querying "pikachu" 
+cargo run "pikachu" --giphy
+```
+
 #### Still a "work in progress" project
 
 ---
