@@ -1,8 +1,7 @@
 use crate::ascii::symbol::{to_string, AsciiSymbol};
-use gif::Frame;
 use std::borrow::Cow;
 
-pub struct AsciiFrame {
+pub struct AsciiGifFrame {
     pub width: u16,
     pub height: u16,
     pub buffer: Vec<AsciiSymbol>,
@@ -11,8 +10,8 @@ pub struct AsciiFrame {
     pub left: u16,
 }
 
-impl From<&Frame<'_>> for AsciiFrame {
-    fn from(frame: &Frame) -> Self {
+impl From<&gif::Frame<'_>> for AsciiGifFrame {
+    fn from(frame: &gif::Frame<'_>) -> Self {
         Self {
             width: frame.width,
             height: frame.height,
@@ -24,7 +23,7 @@ impl From<&Frame<'_>> for AsciiFrame {
     }
 }
 
-impl AsciiFrame {
+impl AsciiGifFrame {
     pub fn to_string(&self) -> String {
         to_string(
             &self.buffer,

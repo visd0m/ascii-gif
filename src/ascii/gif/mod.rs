@@ -1,11 +1,12 @@
-use crate::ascii::frame::AsciiFrame;
+use frame::AsciiGifFrame;
 
+pub mod frame;
 pub mod player;
 
 pub struct AsciiGif {
     pub width: u16,
     pub height: u16,
-    pub frames: Vec<AsciiFrame>,
+    pub frames: Vec<AsciiGifFrame>,
 }
 
 #[derive(Debug)]
@@ -19,7 +20,7 @@ pub struct ErrorPayload {
 }
 
 impl AsciiGif {
-    pub fn new(frames: Vec<AsciiFrame>, width: u16, height: u16) -> Self {
+    pub fn new(frames: Vec<AsciiGifFrame>, width: u16, height: u16) -> Self {
         Self {
             frames,
             width,

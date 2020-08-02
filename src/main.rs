@@ -1,9 +1,9 @@
-use crate::ascii::frame::AsciiFrame;
+use crate::ascii::gif::frame::AsciiGifFrame;
 use crate::ascii::gif::player::AsciiGifPlayer;
 use crate::ascii::gif::AsciiGif;
 use crate::cli::Cli;
 use crate::http::get;
-use gif::SetParameter;
+use gif::{ColorOutput, Decoder, SetParameter};
 use hyper::client::HttpConnector;
 use hyper::Client;
 use hyper_tls::HttpsConnector;
@@ -37,13 +37,13 @@ async fn main() {
         from_tenor(&client, q, tenor_api_key).await
     };
 
-    let mut decoder = gif::Decoder::new(get(&client, &url).await.unwrap());
-    decoder.set(gif::ColorOutput::RGBA);
+    let mut decoder = Decoder::new(get(&client, &url).await.unwrap());
+    decoder.set(ColorOutput::RGBA);
     let mut decoder = decoder.read_info().unwrap();
     let gif_width = decoder.width().clone();
     let gif_height = decoder.height().clone();
 
-    let mut frames: Vec<AsciiFrame> = Vec::new();
+    let mut frames: Vec<AsciiGifFrame> = Vec::new();
     while let Some(frame) = decoder.read_next_frame().unwrap() {
         frames.push(frame.into())
     }
@@ -89,7 +89,3 @@ async fn from_tenor(
         .url
         .clone()
 }
-
-// https://media.tenor.com/images/2bfd030f6db53d738fcc08d3e9a3afbe/tenor.gif (squiddy)
-// https://media.tenor.com/images/a53a589ea59868ab7458d4006c080458/tenor.gif boo (monther&co)
-// https://media.tenor.com/images/cac3fc4dc1a2f027a8e8aaadc8b4f888/tenor.gif partial frames

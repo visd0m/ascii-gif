@@ -1,4 +1,4 @@
-use crate::ascii::frame::AsciiFrame;
+use crate::ascii::gif::frame::AsciiGifFrame;
 use crate::ascii::gif::AsciiGif;
 use crate::ascii::symbol::{to_string, AsciiSymbol};
 use std::fs::File;
@@ -105,7 +105,7 @@ impl AsciiGifPlayer {
     }
 }
 
-fn debug_frame(index: u16, frame: &AsciiFrame) {
+fn debug_frame(index: u16, frame: &AsciiGifFrame) {
     let ascii_frame_as_string: String = frame.to_string();
     let mut file = File::create(Path::new(&format!("./debug_frames/frame_{}.txt", index))).unwrap();
     file.write(ascii_frame_as_string.as_bytes()).unwrap();
