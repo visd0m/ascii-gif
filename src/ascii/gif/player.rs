@@ -54,9 +54,9 @@ impl AsciiGifPlayer {
     }
 
     pub fn display(&self) {
-        print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
+        print!("{esc}[1;1H", esc = 27 as char);
 
-        println!(
+        print!(
             "{}",
             to_string(
                 &self.display_buffer,

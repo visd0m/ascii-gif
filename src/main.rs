@@ -1,15 +1,18 @@
 use crate::ascii::frame::AsciiFrame;
 use crate::ascii::gif::player::AsciiGifPlayer;
 use crate::ascii::gif::AsciiGif;
+use crate::cli::Cli;
 use crate::http::get;
 use gif::SetParameter;
 use hyper::client::HttpConnector;
 use hyper::Client;
 use hyper_tls::HttpsConnector;
 use std::env;
+use structopt::StructOpt;
 use url::form_urlencoded::byte_serialize;
 
 pub mod ascii;
+pub mod cli;
 pub mod giphy;
 pub mod http;
 pub mod tenor;
@@ -20,27 +23,32 @@ async fn main() {
     let giphy_api_key = env::var("GIPHY_API_KEY").expect("Error loading giphy apikey");
     let tenor_api_key = env::var("TENOR_API_KEY").expect("Error loading tenor apikey");
 
-    let args: Vec<String> = env::args().collect();
-    debug_assert_eq!(2, args.len());
-    let q = args.get(1).unwrap();
+    let args: Cli = Cli::from_args();
+    let q = &args.q;
 
     let (w, h) = term_size::dimensions().unwrap();
 
     let https = HttpsConnector::new();
     let client = Client::builder().build::<_, hyper::Body>(https);
 
-    // let (_, _) = giphy(&client, q, giphy_api_key).await;
-    let search_tenor = tenor(&client, q, tenor_api_key).await;
+    let url = if args.giphy {
+        let (_search, random) = giphy(&client, q, giphy_api_key).await;
+        dbg!(&random);
+        random.data.url.clone()
+    } else {
+        let random_tenor = &tenor(&client, q, tenor_api_key).await;
 
-    let url = &search_tenor
-        .results
-        .first()
-        .unwrap()
-        .media
-        .first()
-        .unwrap()
-        .nanogif
-        .url;
+        random_tenor
+            .results
+            .first()
+            .unwrap()
+            .media
+            .first()
+            .unwrap()
+            .nanogif
+            .url
+            .clone()
+    };
 
     // let url =
     //    "https://media.tenor.com/images/a53a589ea59868ab7458d4006c080458/tenor.gif".to_string();
@@ -59,6 +67,8 @@ async fn main() {
     let ascii_gif = AsciiGif::new(frames, global_width, global_height);
 
     let mut player = AsciiGifPlayer::new(h as u16, w as u16);
+
+    print!("{esc}[2J", esc = 27 as char);
 
     loop {
         player.play(&ascii_gif);
