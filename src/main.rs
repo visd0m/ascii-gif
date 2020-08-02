@@ -32,74 +32,59 @@ async fn main() {
     let client = Client::builder().build::<_, hyper::Body>(https);
 
     let url = if args.giphy {
-        let (_search, random) = giphy(&client, q, giphy_api_key).await;
-        dbg!(&random);
-        random.data.url.clone()
+        from_giphy(&client, q, giphy_api_key).await
     } else {
-        let random_tenor = &tenor(&client, q, tenor_api_key).await;
-
-        random_tenor
-            .results
-            .first()
-            .unwrap()
-            .media
-            .first()
-            .unwrap()
-            .nanogif
-            .url
-            .clone()
+        from_tenor(&client, q, tenor_api_key).await
     };
-
-    // let url =
-    //    "https://media.tenor.com/images/a53a589ea59868ab7458d4006c080458/tenor.gif".to_string();
 
     let mut decoder = gif::Decoder::new(get(&client, &url).await.unwrap());
     decoder.set(gif::ColorOutput::RGBA);
     let mut decoder = decoder.read_info().unwrap();
-    let global_width = decoder.width().clone();
-    let global_height = decoder.height().clone();
+    let gif_width = decoder.width().clone();
+    let gif_height = decoder.height().clone();
 
     let mut frames: Vec<AsciiFrame> = Vec::new();
     while let Some(frame) = decoder.read_next_frame().unwrap() {
         frames.push(frame.into())
     }
 
-    let ascii_gif = AsciiGif::new(frames, global_width, global_height);
-
+    let ascii_gif = AsciiGif::new(frames, gif_width, gif_height);
     let mut player = AsciiGifPlayer::new(h as u16, w as u16);
-
-    print!("{esc}[2J", esc = 27 as char);
-
-    loop {
-        player.play(&ascii_gif);
-    }
+    player.play(&ascii_gif, true);
 }
 
-async fn giphy(
+async fn from_giphy(
     client: &Client<HttpsConnector<HttpConnector>>,
     q: &String,
     apikey: String,
-) -> (giphy::types::Search, giphy::types::Random) {
-    let giphy = giphy::Giphy::new(client, apikey);
-
-    let search_giphy = giphy.search(q, 1).await;
-    let random_giphy = giphy.random(q).await;
-
-    (search_giphy.unwrap(), random_giphy.unwrap())
+) -> String {
+    giphy::Giphy::new(client, apikey)
+        .random(q)
+        .await
+        .expect("no results fodun using giphy")
+        .data
+        .url
+        .clone()
 }
 
-async fn tenor(
+async fn from_tenor(
     client: &Client<HttpsConnector<HttpConnector>>,
     q: &String,
     apikey: String,
-) -> tenor::types::Search {
-    let tenor = tenor::Tenor::new(client, apikey);
-
-    let search_tenor = tenor
+) -> String {
+    tenor::Tenor::new(client, apikey)
         .random(&byte_serialize(q.as_bytes()).collect(), 1)
-        .await;
-
-    search_tenor.unwrap()
+        .await
+        .unwrap()
+        .results
+        .first()
+        .expect("no results found using tenor")
+        .media
+        .first()
+        .expect("no media found using tenor")
+        .nanogif
+        .url
+        .clone()
 }
 
 // https://media.tenor.com/images/2bfd030f6db53d738fcc08d3e9a3afbe/tenor.gif (squiddy)

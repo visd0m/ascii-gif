@@ -10,8 +10,8 @@ use tokio::time::Duration;
 pub struct AsciiGifPlayer {
     pub max_lines: u16,
     pub max_columns: u16,
-    pub canvas_width: u16,
-    pub canvas_height: u16,
+    pub gif_width: u16,
+    pub gif_height: u16,
     pub display_buffer: Vec<AsciiSymbol>,
 }
 
@@ -20,8 +20,8 @@ impl AsciiGifPlayer {
         Self {
             max_columns,
             max_lines,
-            canvas_width: max_columns,
-            canvas_height: max_lines,
+            gif_width: max_columns,
+            gif_height: max_lines,
             display_buffer: vec![
                 AsciiSymbol {
                     symbol: " ".to_string(),
@@ -32,9 +32,9 @@ impl AsciiGifPlayer {
         }
     }
 
-    pub fn play(&mut self, gif: &AsciiGif) {
-        self.canvas_width = gif.width;
-        self.canvas_height = gif.height;
+    pub fn play(&mut self, gif: &AsciiGif, r#loop: bool) {
+        self.gif_width = gif.width;
+        self.gif_height = gif.height;
         self.display_buffer = vec![
             AsciiSymbol {
                 symbol: " ".to_string(),
@@ -42,6 +42,19 @@ impl AsciiGifPlayer {
             };
             (gif.width * gif.height) as usize
         ];
+        // clear screen
+        print!("{esc}[2J", esc = 27 as char);
+
+        if r#loop {
+            loop {
+                self.do_play(gif)
+            }
+        } else {
+            self.do_play(gif)
+        }
+    }
+
+    fn do_play(&mut self, gif: &AsciiGif) {
         for (index, frame) in gif.frames.iter().enumerate() {
             self.update_display_buffer(frame.top, frame.left, &frame.buffer, frame.width);
 
@@ -60,8 +73,8 @@ impl AsciiGifPlayer {
             "{}",
             to_string(
                 &self.display_buffer,
-                self.canvas_height as usize,
-                self.canvas_width as usize,
+                self.gif_height as usize,
+                self.gif_width as usize,
                 self.max_lines as usize,
                 self.max_columns as usize,
             )
@@ -80,8 +93,7 @@ impl AsciiGifPlayer {
             .enumerate()
             .for_each(|(line_index, line)| {
                 line.iter().enumerate().for_each(|(column_index, symbol)| {
-                    let position: usize = (((top) as usize + line_index)
-                        * self.canvas_width as usize)
+                    let position: usize = (((top) as usize + line_index) * self.gif_width as usize)
                         + ((left) as usize)
                         + (column_index as usize);
 
