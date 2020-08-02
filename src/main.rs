@@ -59,7 +59,7 @@ async fn from_giphy(
     apikey: String,
 ) -> String {
     giphy::Giphy::new(client, apikey)
-        .random(q)
+        .random(&byte_serialize(q.as_bytes()).collect())
         .await
         .expect("no results fodun using giphy")
         .data
