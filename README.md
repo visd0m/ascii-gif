@@ -11,6 +11,7 @@
 
 ---
 todos
-- avoid to crop gifs
+- enhance ascii transformation (choose better characters / enrich characters)
+- stop cropping gifs (mvp solution)
 - cli arguments enhancement
 - turn code into better rust
