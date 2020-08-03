@@ -10,6 +10,7 @@ use url::form_urlencoded::byte_serialize;
 
 pub mod ascii;
 pub mod cli;
+pub mod gif_2;
 pub mod giphy;
 pub mod http;
 pub mod postprocessor;
