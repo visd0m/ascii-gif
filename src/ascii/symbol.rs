@@ -16,11 +16,11 @@ impl From<(u8, u8, u8, u8)> for AsciiSymbol {
                 alpha,
             },
             10..=19 => Self {
-                symbol: "0".to_string(),
+                symbol: "#".to_string(),
                 alpha,
             },
             20..=29 => Self {
-                symbol: "A".to_string(),
+                symbol: "0".to_string(),
                 alpha,
             },
             30..=39 => Self {
@@ -28,7 +28,7 @@ impl From<(u8, u8, u8, u8)> for AsciiSymbol {
                 alpha,
             },
             40..=49 => Self {
-                symbol: "#".to_string(),
+                symbol: "A".to_string(),
                 alpha,
             },
             50..=59 => Self {
@@ -48,36 +48,67 @@ impl From<(u8, u8, u8, u8)> for AsciiSymbol {
                 alpha,
             },
             90..=99 => Self {
-                symbol: "\"".to_string(),
-                alpha,
-            },
-            100..=149 => Self {
                 symbol: "+".to_string(),
                 alpha,
             },
-            160..=169 => Self {
+            100..=109 => Self {
+                symbol: "=".to_string(),
+                alpha,
+            },
+            110..=119 => Self {
+                symbol: "/".to_string(),
+                alpha,
+            },
+            120..=129 => Self {
+                symbol: "|".to_string(),
+                alpha,
+            },
+            130..=139 => Self {
+                symbol: "!".to_string(),
+                alpha,
+            },
+            140..=149 => Self {
+                symbol: "\"".to_string(),
+                alpha,
+            },
+            150..=159 => Self {
                 symbol: ";".to_string(),
                 alpha,
             },
-            170..=179 => Self {
+            160..=169 => Self {
                 symbol: ":".to_string(),
                 alpha,
             },
-            180..=189 => Self {
+            170..=179 => Self {
                 symbol: "~".to_string(),
                 alpha,
             },
-            190..=199 => Self {
+            180..=189 => Self {
                 symbol: "'".to_string(),
                 alpha,
             },
-
-            200..=249 => Self {
+            190..=199 => Self {
                 symbol: "-".to_string(),
                 alpha,
             },
-            _ => Self {
+            200..=209 => Self {
+                symbol: "`".to_string(),
+                alpha,
+            },
+            210..=219 => Self {
+                symbol: "°".to_string(),
+                alpha,
+            },
+            220..=229 => Self {
+                symbol: ",".to_string(),
+                alpha,
+            },
+            230..=239 => Self {
                 symbol: ".".to_string(),
+                alpha,
+            },
+            _ => Self {
+                symbol: " ".to_string(),
                 alpha,
             },
         }
