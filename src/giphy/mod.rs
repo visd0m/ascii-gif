@@ -44,4 +44,11 @@ impl<'a> Giphy<'a> {
         let search = serde_json::from_reader(get(&self.http_client, &url).await?)?;
         Ok(search)
     }
+
+    pub async fn by_id(&self, id: &String) -> Result<Random, Box<dyn std::error::Error>> {
+        let url = format!("{}/{}?api_key={}", BASE_URL, id, self.apikey);
+
+        let by_id = serde_json::from_reader(get(&self.http_client, &url).await?)?;
+        Ok(by_id)
+    }
 }
