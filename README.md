@@ -23,9 +23,9 @@ cargo run -- --id "U2nN0ridM4lXy" --giphy
 ```
 
 #### Ascii encoding
-The ascii can be performed using 10 or 69 characters.
-The default encoding is 10.
-It is possible to use 60 chars encoding using parameter --encoding
+The ascii encoding can be performed using 10 or 69 characters.
+The default encoding uses 10 characters.
+It is possible to use 60 characters encoding using parameter --encoding
 ```bash
 cargo run -- --id "U2nN0ridM4lXy" --giphy --encoding 69
 ``` 
