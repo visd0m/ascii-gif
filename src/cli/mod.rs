@@ -1,3 +1,4 @@
+use crate::ascii::symbol::AsciiSymbolEncoding;
 use serde::export::Formatter;
 use std::error::Error;
 use std::fmt;
@@ -14,6 +15,8 @@ pub struct Cli {
     pub tenor: bool,
     #[structopt(short, long)]
     pub giphy: bool,
+    #[structopt(long, default_value = "10")]
+    pub encoding: AsciiSymbolEncoding,
 }
 
 #[derive(Debug)]

@@ -45,7 +45,7 @@ async fn main() {
 
     let mut frames: Vec<AsciiGifFrame> = Vec::new();
     while let Some(frame) = decoder.read_next_frame().unwrap() {
-        frames.push(frame.into())
+        frames.push((frame, &args.encoding).into())
     }
 
     let ascii_gif = AsciiGif::new(frames, gif_width, gif_height);
