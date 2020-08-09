@@ -7,6 +7,7 @@ use gif::{ColorOutput, Decoder, SetParameter};
 use hyper::client::HttpConnector;
 use hyper::Client;
 use hyper_tls::HttpsConnector;
+use std::cmp::min;
 use std::env;
 use structopt::StructOpt;
 use url::form_urlencoded::byte_serialize;
@@ -15,6 +16,7 @@ pub mod ascii;
 pub mod cli;
 pub mod giphy;
 pub mod http;
+pub mod postprocessing;
 pub mod tenor;
 
 #[tokio::main]
@@ -49,7 +51,14 @@ async fn main() {
     }
 
     let ascii_gif = AsciiGif::new(frames, gif_width, gif_height);
-    let mut player = AsciiGifPlayer::new(h as u16, w as u16);
+
+    let mut player = AsciiGifPlayer::new(
+        min(h as u16, gif_height),
+        min(w as u16, gif_width),
+        vec![Box::new(postprocessing::downscaling::Downscaling::new(
+            w as u16, h as u16,
+        ))],
+    );
     player.play(&ascii_gif, true);
 }
 

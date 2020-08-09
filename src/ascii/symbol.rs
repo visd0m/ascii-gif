@@ -109,7 +109,7 @@ pub struct UnhandledEncodingError {
     pub message: String,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct AsciiSymbol {
     pub symbol: String,
     pub alpha: u8,

@@ -1,6 +1,7 @@
 use crate::ascii::gif::frame::AsciiGifFrame;
 use crate::ascii::gif::AsciiGif;
 use crate::ascii::symbol::{to_string, AsciiSymbol};
+use crate::postprocessing::{DisplayData, PostProcessor};
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
@@ -13,10 +14,15 @@ pub struct AsciiGifPlayer {
     pub gif_width: u16,
     pub gif_height: u16,
     pub display_buffer: Vec<AsciiSymbol>,
+    pub post_processors: Vec<Box<dyn PostProcessor>>,
 }
 
 impl AsciiGifPlayer {
-    pub fn new(max_lines: u16, max_columns: u16) -> Self {
+    pub fn new(
+        max_lines: u16,
+        max_columns: u16,
+        post_processors: Vec<Box<dyn PostProcessor>>,
+    ) -> Self {
         Self {
             max_columns,
             max_lines,
@@ -29,12 +35,14 @@ impl AsciiGifPlayer {
                 };
                 (max_columns * max_lines) as usize
             ],
+            post_processors,
         }
     }
 
     pub fn play(&mut self, gif: &AsciiGif, r#loop: bool) {
         self.gif_width = gif.width;
         self.gif_height = gif.height;
+
         self.display_buffer = vec![
             AsciiSymbol {
                 symbol: " ".to_string(),
@@ -69,12 +77,21 @@ impl AsciiGifPlayer {
     pub fn display(&self) {
         print!("{esc}[1;1H", esc = 27 as char);
 
+        let display_data = self.post_processors.iter().fold(
+            DisplayData {
+                buffer: self.display_buffer.clone(),
+                height: self.gif_height,
+                width: self.gif_width,
+            },
+            |acc, p| p.process(acc),
+        );
+
         print!(
             "{}",
             to_string(
-                &self.display_buffer,
-                self.gif_height as usize,
-                self.gif_width as usize,
+                &display_data.buffer,
+                display_data.height as usize,
+                display_data.width as usize,
                 self.max_lines as usize,
                 self.max_columns as usize,
             )
