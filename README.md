@@ -1,6 +1,6 @@
 ### Gifs are not trending anymore, but what about ascii gifs?
 
-![Alt Text](https://github.com/visd0m/ascii-gif/blob/master/ascii-gif-example.gif)
+![Alt Text](https://github.com/visd0m/ascii-gif/blob/master/ascii-gif.gif)
 
 - retrieve a gif using tenor and/or giphy apis
 - transform the gif into an "ascii gif"
@@ -35,6 +35,6 @@ cargo run -- --id "U2nN0ridM4lXy" --giphy --encoding 69
 ---
 todos
 - enhance ascii transformation (choose better characters / enrich characters)
-- stop cropping gifs (mvp solution)
-- cli arguments enhancement
+- <s>stop cropping gifs</s>
+- <s>cli arguments enhancement</s>
 - turn code into better rust
