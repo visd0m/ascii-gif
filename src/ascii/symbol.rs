@@ -2,7 +2,7 @@ use once_cell::sync::Lazy;
 use std::cmp::min;
 use std::str::FromStr;
 
-static ASCII_MAPPING_69: Lazy<[String; 69]> = Lazy::new(|| {
+static ASCII_MAPPING_70: Lazy<[String; 70]> = Lazy::new(|| {
     [
         "$".to_string(),
         "@".to_string(),
@@ -73,6 +73,7 @@ static ASCII_MAPPING_69: Lazy<[String; 69]> = Lazy::new(|| {
         "`".to_string(),
         "'".to_string(),
         ".".to_string(),
+        " ".to_string(),
     ]
 });
 
@@ -117,7 +118,7 @@ pub struct AsciiSymbol {
 
 #[derive(Debug)]
 pub enum AsciiSymbolEncoding {
-    Symbols69,
+    Symbols70,
     Symbols10,
 }
 
@@ -127,7 +128,7 @@ impl FromStr for AsciiSymbolEncoding {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "10" => Ok(Self::Symbols10),
-            "69" => Ok(Self::Symbols69),
+            "70" => Ok(Self::Symbols70),
             _ => Err(AsciiSymbolEncodingError::UnhandledEncodingError(
                 UnhandledEncodingError {
                     message: format!("unhandled encoding={}", s),
@@ -142,7 +143,7 @@ impl From<((u8, u8, u8, u8), &AsciiSymbolEncoding)> for AsciiSymbol {
         let g_value = gray_value(r, g, b);
 
         let symbol = match encoding {
-            AsciiSymbolEncoding::Symbols69 => map_to_69_ascii_chars(g_value),
+            AsciiSymbolEncoding::Symbols70 => map_to_69_ascii_chars(g_value),
             AsciiSymbolEncoding::Symbols10 => map_to_10_ascii_chars(g_value),
         };
 
@@ -180,7 +181,7 @@ fn map_to_10_ascii_chars(g_value: u8) -> String {
 }
 
 fn map_to_69_ascii_chars(g_value: u8) -> String {
-    let index = ((g_value as f64 / 3.69).floor() - 1 as f64) as usize;
-    let symbol = ASCII_MAPPING_69[index as usize].clone();
+    let index = ((g_value as f64 / 3.64).floor() - 1 as f64) as usize;
+    let symbol = ASCII_MAPPING_70[index as usize].clone();
     symbol
 }

@@ -32,6 +32,22 @@ impl PostProcessor for Downscaling {
             )
         };
 
+        if scaled_height == display_data.height && scaled_width == display_data.width {
+            return display_data;
+        }
+
+        let scaled_height = if display_data.height < scaled_height {
+            display_data.height
+        } else {
+            scaled_height
+        };
+
+        let scaled_width = if display_data.width < scaled_width {
+            display_data.width
+        } else {
+            scaled_width
+        };
+
         let pixels_to_remove_width = display_data.width - scaled_width;
         let pixels_to_remove_height = display_data.height - scaled_height;
 
