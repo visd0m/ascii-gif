@@ -63,7 +63,7 @@ impl AsciiGifPlayer {
     }
 
     fn do_play(&mut self, gif: &AsciiGif) {
-        for (index, frame) in gif.frames.iter().enumerate() {
+        for (_index, frame) in gif.frames.iter().enumerate() {
             self.update_display_buffer(frame.top, frame.left, &frame.buffer, frame.width);
 
             // debug_frame(index as u16, frame);
