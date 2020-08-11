@@ -1,5 +1,5 @@
-use crate::ascii::symbol::AsciiSymbol;
-use crate::postprocessing::{DisplayData, PostProcessor};
+use crate::ascii::symbol::Symbol;
+use crate::postprocessor::{DisplayData, PostProcessor};
 
 pub struct Downscaling {
     pub target_width: u16,
@@ -61,7 +61,7 @@ impl PostProcessor for Downscaling {
             .chunks(display_data.width as usize)
             .into_iter()
             .map(|chunk| chunk.to_vec())
-            .collect::<Vec<Vec<AsciiSymbol>>>();
+            .collect::<Vec<Vec<Symbol>>>();
 
         for i in 0..pixels_to_remove_height {
             lines.remove(((i * remove_one_height_every as u16) % lines.len() as u16) as usize);
@@ -76,7 +76,7 @@ impl PostProcessor for Downscaling {
                 }
                 line
             })
-            .collect::<Vec<AsciiSymbol>>();
+            .collect::<Vec<Symbol>>();
 
         DisplayData {
             buffer,

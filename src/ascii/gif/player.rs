@@ -1,23 +1,23 @@
-use crate::ascii::gif::frame::AsciiGifFrame;
-use crate::ascii::gif::AsciiGif;
-use crate::ascii::symbol::{to_string, AsciiSymbol};
-use crate::postprocessing::{DisplayData, PostProcessor};
+use crate::ascii::gif::frame::Frame;
+use crate::ascii::gif::Gif;
+use crate::ascii::symbol::{to_string, Symbol};
+use crate::postprocessor::{DisplayData, PostProcessor};
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 use std::thread::sleep;
 use tokio::time::Duration;
 
-pub struct AsciiGifPlayer {
+pub struct Player {
     pub max_lines: u16,
     pub max_columns: u16,
     pub gif_width: u16,
     pub gif_height: u16,
-    pub display_buffer: Vec<AsciiSymbol>,
+    pub display_buffer: Vec<Symbol>,
     pub post_processors: Vec<Box<dyn PostProcessor>>,
 }
 
-impl AsciiGifPlayer {
+impl Player {
     pub fn new(
         max_lines: u16,
         max_columns: u16,
@@ -29,7 +29,7 @@ impl AsciiGifPlayer {
             gif_width: max_columns,
             gif_height: max_lines,
             display_buffer: vec![
-                AsciiSymbol {
+                Symbol {
                     symbol: " ".to_string(),
                     alpha: 0
                 };
@@ -39,12 +39,12 @@ impl AsciiGifPlayer {
         }
     }
 
-    pub fn play(&mut self, gif: &AsciiGif, r#loop: bool) {
+    pub fn play(&mut self, gif: &Gif, r#loop: bool, debug: bool) {
         self.gif_width = gif.width;
         self.gif_height = gif.height;
 
         self.display_buffer = vec![
-            AsciiSymbol {
+            Symbol {
                 symbol: " ".to_string(),
                 alpha: 0
             };
@@ -55,18 +55,20 @@ impl AsciiGifPlayer {
 
         if r#loop {
             loop {
-                self.do_play(gif)
+                self.do_play(gif, debug)
             }
         } else {
-            self.do_play(gif)
+            self.do_play(gif, debug)
         }
     }
 
-    fn do_play(&mut self, gif: &AsciiGif) {
-        for (_index, frame) in gif.frames.iter().enumerate() {
+    fn do_play(&mut self, gif: &Gif, debug: bool) {
+        for (index, frame) in gif.frames.iter().enumerate() {
             self.update_display_buffer(frame.top, frame.left, &frame.buffer, frame.width);
 
-            // debug_frame(index as u16, frame);
+            if debug {
+                debug_frame(index as u16, frame)
+            };
 
             self.display();
 
@@ -98,13 +100,7 @@ impl AsciiGifPlayer {
         );
     }
 
-    fn update_display_buffer(
-        &mut self,
-        top: u16,
-        left: u16,
-        new_buffer: &Vec<AsciiSymbol>,
-        width: u16,
-    ) {
+    fn update_display_buffer(&mut self, top: u16, left: u16, new_buffer: &Vec<Symbol>, width: u16) {
         new_buffer
             .chunks(width as usize)
             .enumerate()
@@ -122,7 +118,7 @@ impl AsciiGifPlayer {
     }
 }
 
-fn debug_frame(index: u16, frame: &AsciiGifFrame) {
+fn debug_frame(index: u16, frame: &Frame) {
     let ascii_frame_as_string: String = frame.to_string();
     let mut file = File::create(Path::new(&format!("./debug_frames/frame_{}.txt", index))).unwrap();
     file.write(ascii_frame_as_string.as_bytes()).unwrap();

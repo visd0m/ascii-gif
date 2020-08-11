@@ -1,4 +1,4 @@
-use crate::ascii::symbol::AsciiSymbol;
+use crate::ascii::symbol::Symbol;
 
 pub mod downscaling;
 
@@ -7,7 +7,7 @@ pub trait PostProcessor {
 }
 
 pub struct DisplayData {
-    pub buffer: Vec<AsciiSymbol>,
+    pub buffer: Vec<Symbol>,
     pub width: u16,
     pub height: u16,
 }

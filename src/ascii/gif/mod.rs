@@ -1,26 +1,16 @@
-use frame::AsciiGifFrame;
+use frame::Frame;
 
 pub mod frame;
 pub mod player;
 
-pub struct AsciiGif {
+pub struct Gif {
     pub width: u16,
     pub height: u16,
-    pub frames: Vec<AsciiGifFrame>,
+    pub frames: Vec<Frame>,
 }
 
-#[derive(Debug)]
-pub enum Error {
-    NoIndex(ErrorPayload),
-}
-
-#[derive(Debug)]
-pub struct ErrorPayload {
-    pub message: String,
-}
-
-impl AsciiGif {
-    pub fn new(frames: Vec<AsciiGifFrame>, width: u16, height: u16) -> Self {
+impl Gif {
+    pub fn new(frames: Vec<Frame>, width: u16, height: u16) -> Self {
         Self {
             frames,
             width,

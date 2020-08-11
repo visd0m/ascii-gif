@@ -95,11 +95,11 @@ static ASCII_MAPPING_10: Lazy<[String; 10]> = Lazy::new(|| {
 });
 
 #[derive(Debug)]
-pub enum AsciiSymbolEncodingError {
+pub enum EncodingError {
     UnhandledEncodingError(UnhandledEncodingError),
 }
 
-impl ToString for AsciiSymbolEncodingError {
+impl ToString for EncodingError {
     fn to_string(&self) -> String {
         "Error encoding to ascii".to_string()
     }
@@ -111,25 +111,25 @@ pub struct UnhandledEncodingError {
 }
 
 #[derive(Clone, Debug)]
-pub struct AsciiSymbol {
+pub struct Symbol {
     pub symbol: String,
     pub alpha: u8,
 }
 
 #[derive(Debug)]
-pub enum AsciiSymbolEncoding {
+pub enum Encoding {
     Symbols70,
     Symbols10,
 }
 
-impl FromStr for AsciiSymbolEncoding {
-    type Err = AsciiSymbolEncodingError;
+impl FromStr for Encoding {
+    type Err = EncodingError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "10" => Ok(Self::Symbols10),
             "70" => Ok(Self::Symbols70),
-            _ => Err(AsciiSymbolEncodingError::UnhandledEncodingError(
+            _ => Err(EncodingError::UnhandledEncodingError(
                 UnhandledEncodingError {
                     message: format!("unhandled encoding={}", s),
                 },
@@ -138,13 +138,13 @@ impl FromStr for AsciiSymbolEncoding {
     }
 }
 
-impl From<((u8, u8, u8, u8), &AsciiSymbolEncoding)> for AsciiSymbol {
-    fn from(((r, g, b, alpha), encoding): ((u8, u8, u8, u8), &AsciiSymbolEncoding)) -> Self {
+impl From<((u8, u8, u8, u8), &Encoding)> for Symbol {
+    fn from(((r, g, b, alpha), encoding): ((u8, u8, u8, u8), &Encoding)) -> Self {
         let g_value = gray_value(r, g, b);
 
         let symbol = match encoding {
-            AsciiSymbolEncoding::Symbols70 => map_to_69_ascii_chars(g_value),
-            AsciiSymbolEncoding::Symbols10 => map_to_10_ascii_chars(g_value),
+            Encoding::Symbols70 => map_to_69_ascii_chars(g_value),
+            Encoding::Symbols10 => map_to_10_ascii_chars(g_value),
         };
 
         Self { symbol, alpha }
@@ -156,7 +156,7 @@ fn gray_value(r: u8, g: u8, b: u8) -> u8 {
 }
 
 pub fn to_string(
-    symbols: &Vec<AsciiSymbol>,
+    symbols: &Vec<Symbol>,
     lines: usize,
     columns: usize,
     max_lines: usize,

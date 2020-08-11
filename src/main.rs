@@ -1,6 +1,3 @@
-use crate::ascii::gif::frame::AsciiGifFrame;
-use crate::ascii::gif::player::AsciiGifPlayer;
-use crate::ascii::gif::AsciiGif;
 use crate::cli::{Cli, CliError};
 use crate::http::get;
 use gif::{ColorOutput, Decoder, SetParameter};
@@ -16,7 +13,7 @@ pub mod ascii;
 pub mod cli;
 pub mod giphy;
 pub mod http;
-pub mod postprocessing;
+pub mod postprocessor;
 pub mod tenor;
 
 #[tokio::main]
@@ -45,21 +42,21 @@ async fn main() {
     let gif_width = decoder.width().clone();
     let gif_height = decoder.height().clone();
 
-    let mut frames: Vec<AsciiGifFrame> = Vec::new();
+    let mut frames: Vec<ascii::gif::frame::Frame> = Vec::new();
     while let Some(frame) = decoder.read_next_frame().unwrap() {
         frames.push((frame, &args.encoding).into())
     }
 
-    let ascii_gif = AsciiGif::new(frames, gif_width, gif_height);
+    let ascii_gif = ascii::gif::Gif::new(frames, gif_width, gif_height);
 
-    let mut player = AsciiGifPlayer::new(
+    let mut player = ascii::gif::player::Player::new(
         min(h as u16, gif_height),
         min(w as u16, gif_width),
-        vec![Box::new(postprocessing::downscaling::Downscaling::new(
+        vec![Box::new(postprocessor::downscaling::Downscaling::new(
             w as u16, h as u16,
         ))],
     );
-    player.play(&ascii_gif, true);
+    player.play(&ascii_gif, true, args.debug);
 }
 
 async fn giphy(
