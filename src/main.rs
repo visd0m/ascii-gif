@@ -5,7 +5,6 @@ use hyper::client::HttpConnector;
 use hyper::Client;
 use hyper_tls::HttpsConnector;
 use std::cmp::min;
-use std::env;
 use structopt::StructOpt;
 use url::form_urlencoded::byte_serialize;
 
@@ -16,12 +15,11 @@ pub mod http;
 pub mod postprocessor;
 pub mod tenor;
 
+const TENOR_API_KEY: &str = "F491OZRFEBGM";
+const GIPHY_API_KEY: &str = "UoCwwfxnPpX4mxC2y4nYEFmTq1hmdoGN";
+
 #[tokio::main]
 async fn main() {
-    dotenv::dotenv().expect("Error loading env variables");
-    let giphy_api_key = env::var("GIPHY_API_KEY").expect("Error loading giphy apikey");
-    let tenor_api_key = env::var("TENOR_API_KEY").expect("Error loading tenor apikey");
-
     let (w, h) = term_size::dimensions().unwrap();
 
     let https = HttpsConnector::new();
@@ -30,9 +28,9 @@ async fn main() {
     let args: Cli = Cli::from_args();
 
     let url = if args.giphy {
-        giphy(args.q, args.id, &client, giphy_api_key).await
+        giphy(args.q, args.id, &client, GIPHY_API_KEY.to_string()).await
     } else {
-        tenor(args.q, args.id, &client, tenor_api_key).await
+        tenor(args.q, args.id, &client, TENOR_API_KEY.to_string()).await
     }
     .expect("Error retrieving gif");
 

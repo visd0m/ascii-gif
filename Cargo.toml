@@ -22,7 +22,6 @@ hyper-tls = "0.4.3"
 tokio = {version = "0.2.22", features = ["macros"]}
 bytes = "0.5.6"
 gif = "0.10.3"
-dotenv = "0.15.0"
 term_size = "1.0.0-beta1"
 url = "2.1.1"
 structopt = "0.3.15"
