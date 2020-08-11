@@ -1,6 +1,6 @@
 [package]
 name = "ascii-gif"
-version = "0.1.0"
+version = "0.1.2"
 authors = ["Domenico Visconti <domenico.visconti819@gmail.com>"]
 license = "MIT OR Apache-2.0"
 description = "Simple cli to enjoy ascii-gif"
