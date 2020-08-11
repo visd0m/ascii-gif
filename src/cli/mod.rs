@@ -17,8 +17,6 @@ pub struct Cli {
     pub giphy: bool,
     #[structopt(long, default_value = "10")]
     pub encoding: Encoding,
-    #[structopt(short, long)]
-    pub debug: bool,
 }
 
 #[derive(Debug)]

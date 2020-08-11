@@ -54,7 +54,7 @@ async fn main() {
             w as u16, h as u16,
         ))],
     );
-    player.play(&ascii_gif, true, args.debug);
+    player.play(&ascii_gif, true);
 }
 
 async fn giphy(

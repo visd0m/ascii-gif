@@ -11,7 +11,7 @@ dependencies = [
 
 [[package]]
 name = "ascii-gif"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "bytes",
  "chrono",
@@ -820,13 +820,12 @@ dependencies = [
 
 [[package]]
 name = "term_size"
-version = "1.0.0-beta1"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a8a17d8699e154863becdf18e4fd28bd0be27ca72856f54daf75c00f2566898f"
+checksum = "1e4129646ca0ed8f45d09b929036bafad5377103edd06e50bf574b353d2b08d9"
 dependencies = [
- "kernel32-sys",
  "libc",
- "winapi 0.2.8",
+ "winapi 0.3.9",
 ]
 
 [[package]]
