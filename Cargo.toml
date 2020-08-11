@@ -2,6 +2,13 @@
 name = "ascii-gif"
 version = "0.1.0"
 authors = ["Domenico Visconti <domenico.visconti819@gmail.com>"]
+license = "MIT OR Apache-2.0"
+description = "Simple cli to enjoy ascii-gif"
+readme = "README.md"
+homepage = "https://github.com/visd0m/ascii-gif"
+repository = "https://github.com/visd0m/ascii-gif"
+keywords = ["cli", "gif", "ascii"]
+categories = ["command-line-utilities"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
