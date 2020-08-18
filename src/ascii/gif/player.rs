@@ -35,7 +35,7 @@ impl Player {
         }
     }
 
-    pub fn play(&mut self, gif: &Gif, r#loop: bool) {
+    pub fn play(&mut self, gif: Gif, r#loop: bool) {
         self.gif_width = gif.width;
         self.gif_height = gif.height;
 
@@ -49,12 +49,14 @@ impl Player {
         // clear screen
         print!("{esc}[2J", esc = 27 as char);
 
+        let ref_gif = &gif;
+
         if r#loop {
             loop {
-                self.do_play(gif)
+                self.do_play(ref_gif);
             }
         } else {
-            self.do_play(gif)
+            self.do_play(ref_gif)
         }
     }
 
@@ -97,15 +99,19 @@ impl Player {
             .chunks(width as usize)
             .enumerate()
             .for_each(|(line_index, line)| {
-                line.iter().enumerate().for_each(|(column_index, symbol)| {
-                    let position: usize = (((top) as usize + line_index) * self.gif_width as usize)
-                        + ((left) as usize)
-                        + (column_index as usize);
+                line.to_vec()
+                    .into_iter()
+                    .enumerate()
+                    .for_each(|(column_index, symbol)| {
+                        let position: usize = (((top) as usize + line_index)
+                            * self.gif_width as usize)
+                            + ((left) as usize)
+                            + (column_index as usize);
 
-                    if symbol.alpha == 255 {
-                        self.display_buffer[position as usize] = symbol.clone();
-                    }
-                })
-            })
+                        if symbol.alpha == 255 {
+                            self.display_buffer[position as usize] = symbol;
+                        }
+                    })
+            });
     }
 }

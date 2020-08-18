@@ -143,7 +143,7 @@ impl From<((u8, u8, u8, u8), &Encoding)> for Symbol {
         let g_value = gray_value(r, g, b);
 
         let symbol = match encoding {
-            Encoding::Symbols70 => map_to_69_ascii_chars(g_value),
+            Encoding::Symbols70 => map_to_70_ascii_chars(g_value),
             Encoding::Symbols10 => map_to_10_ascii_chars(g_value),
         };
 
@@ -180,7 +180,7 @@ fn map_to_10_ascii_chars(g_value: u8) -> String {
     symbol
 }
 
-fn map_to_69_ascii_chars(g_value: u8) -> String {
+fn map_to_70_ascii_chars(g_value: u8) -> String {
     let index = ((g_value as f64 / 3.64).floor() - 1 as f64) as usize;
     let symbol = ASCII_MAPPING_70[index as usize].clone();
     symbol

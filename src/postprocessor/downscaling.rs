@@ -69,8 +69,7 @@ impl PostProcessor for Downscaling {
 
         let buffer = lines
             .into_iter()
-            .flat_map(|line| {
-                let mut line = line.clone();
+            .flat_map(|mut line| {
                 for i in 0..pixels_to_remove_width {
                     line.remove(((i * remove_one_width_every as u16) % line.len() as u16) as usize);
                 }

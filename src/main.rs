@@ -54,7 +54,7 @@ async fn main() {
             w as u16, h as u16,
         ))],
     );
-    player.play(&ascii_gif, true);
+    player.play(ascii_gif, true);
 }
 
 async fn giphy(
@@ -122,7 +122,7 @@ async fn tenor(
             .media
             .first()
             .expect("no media found using tenor")
-            .nanogif
+            .gif
             .url
             .clone()),
         (None, None) => Err(Box::new(CliError::WrongParameters)),

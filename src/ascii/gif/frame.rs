@@ -1,4 +1,4 @@
-use crate::ascii::symbol::{to_string, Encoding, Symbol};
+use crate::ascii::symbol::{Encoding, Symbol};
 use std::borrow::Cow;
 
 pub struct Frame {
@@ -20,18 +20,6 @@ impl From<(&gif::Frame<'_>, &Encoding)> for Frame {
             top: frame.top,
             left: frame.left,
         }
-    }
-}
-
-impl Frame {
-    pub fn to_string(&self) -> String {
-        to_string(
-            &self.buffer,
-            self.height as usize,
-            self.width as usize,
-            self.height as usize,
-            self.width as usize,
-        )
     }
 }
 
