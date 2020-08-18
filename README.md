@@ -32,7 +32,7 @@ The ascii encoding can be performed using 10 or 70 characters.
 The default encoding uses 10 characters.
 It is possible to use 70 characters encoding using the `--encoding` parameter
 ```bash
-cargo run -- --id "U2nN0ridM4lXy" --giphy --encoding 70
+asci-gif --id "U2nN0ridM4lXy" --giphy --encoding 70
 ``` 
 
 #### Still a "work in progress" project
