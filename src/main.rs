@@ -122,7 +122,7 @@ async fn tenor(
             .media
             .first()
             .expect("no media found using tenor")
-            .gif
+            .nanogif
             .url
             .clone()),
         (None, None) => Err(Box::new(CliError::WrongParameters)),
