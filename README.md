@@ -7,19 +7,24 @@
 - display the gif on the command line 
 - enjoy!
 
+#### How to install
+```bash
+cargo install ascii-gif
+```
+
 #### Examples
 ```bash
 # retrieve a gif using tenor random api and querying "pikachu"
-cargo run -- --query "pikachu" --tenor
+asci-gif --query "pikachu" --tenor
 
 # retrieve a gif using tenor random api and querying "pikachu"
-cargo run -- --query "pikachu" --giphy
+asci-gif --query "pikachu" --giphy
 
 # retrieve the gif with id 15452657 using tenor api
-cargo run -- --id "15452657" --tenor
+asci-gif --id "15452657" --tenor
 
 # retrieve the gif with id U2nN0ridM4lXy using giphy api
-cargo run -- --id "U2nN0ridM4lXy" --giphy
+asci-gif --id "U2nN0ridM4lXy" --giphy
 ```
 
 #### Ascii encoding
