@@ -1,6 +1,6 @@
 ### Gifs are not trending anymore, but what about ascii gifs?
 
-![](ascii-gif.gif)
+![](ascii-gif-example.gif)
 
 - retrieve a gif using tenor and/or giphy apis
 - transform the gif into an "ascii gif"
