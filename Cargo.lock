@@ -18,6 +18,7 @@ dependencies = [
  "gif",
  "hyper",
  "hyper-tls",
+ "lzw",
  "once_cell",
  "serde",
  "serde_json",
@@ -25,7 +26,6 @@ dependencies = [
  "term_size",
  "tokio",
  "url",
- "weezl",
 ]
 
 [[package]]
@@ -1019,12 +1019,6 @@ name = "wasi"
 version = "0.9.0+wasi-snapshot-preview1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cccddf32554fecc6acb585f82a32a72e28b48f8c4c1883ddfeeeaa96f7d8e519"
-
-[[package]]
-name = "weezl"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a3d2f24b6c3aa92fb33279566dbebf1cbe66b03a73f09aa69cf8cf14d2f9feb9"
 
 [[package]]
 name = "winapi"

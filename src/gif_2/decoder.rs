@@ -1,11 +1,11 @@
 use crate::gif_2;
 use crate::gif_2::ScreenDescriptor;
+use lzw::{BitReader, LsbReader};
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 use std::str::from_utf8;
-use weezl::{BitOrder, BufferResult, LzwError, LzwStatus};
 
 pub struct Decoder {}
 
@@ -72,13 +72,8 @@ pub fn color_map(
         let mut map = HashMap::new();
 
         let map_entries = 3 * 2i32.pow(pixel as u32 + 1);
-        dbg!(map_entries);
-
         let to_index = index + map_entries as usize;
-
         let entries = &bytes[index..to_index];
-
-        dbg!(entries.len());
 
         entries
             .chunks(3 as usize)
@@ -102,7 +97,6 @@ pub fn frames(bytes: &Vec<u8>, index: usize) -> (Vec<gif_2::Frame>, usize) {
     let mut mut_index = index;
     let mut frames: Vec<gif_2::Frame> = Vec::new();
     while let Some(index) = find_frame_index(bytes, mut_index) {
-        dbg!(index);
         let (frame, index) = frame(bytes, index);
         mut_index = index;
         frames.push(frame);
@@ -165,7 +159,6 @@ pub fn image_descriptor(bytes: &Vec<u8>, index: usize) -> (gif_2::ImageDescripto
     let m: bool = nth_bit(flags, 7);
     let i: bool = nth_bit(flags, 6);
     let pixel: u8 = (flags << 5) >> 5;
-    dbg!(pixel);
 
     (
         gif_2::ImageDescriptor {
@@ -184,16 +177,13 @@ pub fn image_descriptor(bytes: &Vec<u8>, index: usize) -> (gif_2::ImageDescripto
 pub fn raster_data(bytes: &Vec<u8>, width: u16, height: u16, index: usize) -> (Vec<u8>, usize) {
     // data is LZW compressed
     let code_size = bytes[index];
-    let mut lzw_decoder = weezl::decode::Decoder::new(BitOrder::Lsb, code_size);
+    let mut lzw_decoder = lzw::Decoder::new(lzw::LsbReader::new(), code_size);
 
-    let decoded: &mut Vec<u8> = &mut vec![0; (width as u32 * height as u32) as usize];
+    let decoded: &mut Vec<u8> = &mut vec![];
 
     let mut block_index: usize = index + 1;
 
-    let mut done = false;
-    while !done || bytes[block_index] != 0b00000000 {
-        dbg!(block_index);
-        // dbg!(&decoded);
+    while bytes[block_index] != 0b00000000 {
         let decoded_index = decode_block(bytes, block_index, &mut lzw_decoder, decoded);
         block_index = decoded_index;
     }
@@ -204,7 +194,7 @@ pub fn raster_data(bytes: &Vec<u8>, width: u16, height: u16, index: usize) -> (V
 pub fn decode_block(
     bytes: &Vec<u8>,
     index: usize,
-    decoder: &mut weezl::decode::Decoder,
+    decoder: &mut lzw::Decoder<LsbReader>,
     mut decoded: &mut Vec<u8>,
 ) -> usize {
     let block_size = bytes[index] as usize;
@@ -212,33 +202,13 @@ pub fn decode_block(
 
     let mut to_decode_index = index + 1;
     while left > 0 {
-        dbg!(left);
-        dbg!(to_decode_index);
-
         let inp = &bytes[to_decode_index..to_decode_index + left];
-
-        dbg!(inp.len());
-        let result = decoder.decode_bytes(inp, decoded);
-
-        dbg!(result.consumed_in);
-        dbg!(result.consumed_out);
-        dbg!(result.status);
-
-        match result.status {
-            Ok(ok) => match ok {
-                LzwStatus::Ok => {
-                    left -= result.consumed_in;
-                }
-                LzwStatus::NoProgress => panic!("S'è rott tutt!"),
-                LzwStatus::Done => panic!("S'è rott tutt!"),
-            },
-            Err(error) => match error {
-                LzwError::InvalidCode => panic!("S'è rott tutt!"),
-            },
-        }
+        let (consumed, bytes) = decoder.decode_bytes(inp).expect("S'è rott tutt!");
+        to_decode_index += consumed;
+        left -= consumed;
+        decoded.append(&mut bytes.to_vec())
     }
 
-    dbg!(decoded);
     to_decode_index
 }
 
@@ -250,7 +220,20 @@ pub fn should_decode() {
     let gif = d.decode(file).unwrap();
 
     assert_eq!("GIF89a", gif.signature);
-    // dbg!(gif);
+    assert_eq!(106, gif.frames.len());
+    gif.frames.iter().for_each(|frame| {
+        assert_eq!(
+            frame.raster_data.len(),
+            (frame.image_descriptor.image_width as u32 * frame.image_descriptor.image_height as u32)
+                as usize
+        );
+
+        if frame.image_descriptor.m {
+            assert!(frame.local_color_map.is_some())
+        } else {
+            assert!(frame.local_color_map.is_none())
+        }
+    });
 }
 
 pub fn nth_bit(byte: u8, nth: usize) -> bool {
