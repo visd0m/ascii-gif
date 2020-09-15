@@ -1,5 +1,4 @@
 use crate::gif_2;
-use crate::gif_2::ScreenDescriptor;
 use lzw::LsbReader;
 use std::collections::HashMap;
 use std::fs::File;
@@ -10,7 +9,7 @@ use std::str::from_utf8;
 pub struct Decoder {}
 
 impl Decoder {
-    pub fn decode(self, source: &mut impl Read) -> Result<gif_2::Gif, Box<dyn std::error::Error>> {
+    pub fn decode(source: &mut impl Read) -> Result<gif_2::Gif, Box<dyn std::error::Error>> {
         let bytes: &mut Vec<u8> = &mut Vec::new();
         source.read_to_end(bytes)?;
 
@@ -35,7 +34,7 @@ pub fn signature(bytes: &Vec<u8>, cursor: usize) -> (String, usize) {
     (signature.to_string(), to_index)
 }
 
-pub fn screen_descriptor(bytes: &Vec<u8>, cursor: usize) -> (ScreenDescriptor, usize) {
+pub fn screen_descriptor(bytes: &Vec<u8>, cursor: usize) -> (gif_2::ScreenDescriptor, usize) {
     let to_index = cursor + 7;
     let screen_descriptor = &bytes[cursor..to_index];
 
@@ -209,10 +208,8 @@ pub fn decode_block(
 
 #[test]
 pub fn should_decode() {
-    let d = Decoder {};
-
     let file = &mut File::open(Path::new("./ascii-gif-example.gif")).unwrap();
-    let gif = d.decode(file).unwrap();
+    let gif = Decoder::decode(file).unwrap();
 
     assert_eq!("GIF89a", gif.signature);
     assert_eq!(106, gif.frames.len());
