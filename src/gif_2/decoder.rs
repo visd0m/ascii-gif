@@ -1,4 +1,5 @@
 use crate::gif_2;
+use crate::gif_2::ExtensionBlock;
 use lzw::LsbReader;
 use std::collections::HashMap;
 use std::fs::File;
@@ -95,8 +96,9 @@ pub fn color_map(
 pub fn frames(bytes: &Vec<u8>, cursor: usize) -> (Vec<gif_2::Frame>, usize) {
     let mut mut_index = cursor;
     let mut frames: Vec<gif_2::Frame> = Vec::new();
-    while let Some(index) = find_frame_index(bytes, mut_index) {
-        let (frame, index) = frame(bytes, index);
+
+    while bytes[mut_index] != 0x3b {
+        let (frame, index) = frame(bytes, mut_index);
         mut_index = index;
         frames.push(frame);
     }
@@ -104,37 +106,36 @@ pub fn frames(bytes: &Vec<u8>, cursor: usize) -> (Vec<gif_2::Frame>, usize) {
     (frames, mut_index)
 }
 
-pub fn find_frame_index(bytes: &Vec<u8>, cursor: usize) -> Option<usize> {
-    let mut found: bool = false;
-    let mut search_index = cursor;
-    let mut found_index = Some(cursor);
-    while !found {
-        match bytes[search_index] {
-            0x2c => {
-                found = true;
-                found_index = Some(search_index);
+pub fn frame(bytes: &Vec<u8>, cursor: usize) -> (gif_2::Frame, usize) {
+    let mut index = cursor;
+    let mut graphic_control_extension: Option<gif_2::GraphicControlExtension> = None;
+
+    while bytes[index] != 0x2c {
+        if bytes[index] == 0x21 {
+            let (block, cursor) = extension_block(bytes, index);
+            index = cursor;
+
+            match block {
+                Some(gif_2::ExtensionBlock::GraphicControlExtension(extension)) => {
+                    graphic_control_extension = Some(extension);
+                }
+                _ => {}
             }
-            0x3b => {
-                found = true;
-                found_index = None;
-            }
-            _ => {
-                search_index += 1;
-            }
+        } else {
+            index += 1;
         }
     }
-    found_index
-}
 
-pub fn frame(bytes: &Vec<u8>, cursor: usize) -> (gif_2::Frame, usize) {
-    let (image_descriptor, index) = image_descriptor(bytes, cursor);
+    let (image_descriptor, index) = image_descriptor(bytes, index);
     let (color_map, index) = color_map(bytes, image_descriptor.pixel, image_descriptor.m, index);
     let (raster_data, index) = raster_data(bytes, index);
+
     (
         gif_2::Frame {
             image_descriptor,
             local_color_map: color_map,
             raster_data,
+            graphic_control_extension,
         },
         index,
     )
@@ -204,6 +205,48 @@ pub fn decode_block(
     }
 
     to_decode_index
+}
+
+pub fn extension_block(bytes: &Vec<u8>, cursor: usize) -> (Option<gif_2::ExtensionBlock>, usize) {
+    let label = bytes[cursor + 1];
+    match label {
+        0xf9 => {
+            let (block, cursor) = graphic_control_extension(bytes, cursor + 2);
+            (
+                Some(gif_2::ExtensionBlock::GraphicControlExtension(block)),
+                cursor,
+            )
+        }
+        _ => (None, cursor + 2),
+    }
+}
+
+pub fn graphic_control_extension(
+    bytes: &Vec<u8>,
+    cursor: usize,
+) -> (gif_2::GraphicControlExtension, usize) {
+    let flags = bytes[cursor + 1];
+    let disposal_method = (flags << 3) >> 5;
+    let user_input_flag = nth_bit(flags, 1);
+    let transparent_color_flag = nth_bit(flags, 0);
+
+    let delay_time = ((bytes[cursor + 3] as u16) << 8) | bytes[cursor + 2] as u16;
+    let transparent_color_index = if transparent_color_flag {
+        Some(bytes[cursor + 4])
+    } else {
+        None
+    };
+
+    (
+        gif_2::GraphicControlExtension {
+            disposal_method,
+            user_input: user_input_flag,
+            transparent_color: transparent_color_flag,
+            delay_time,
+            transparent_color_index,
+        },
+        cursor + if transparent_color_flag { 6 } else { 5 },
+    )
 }
 
 #[test]

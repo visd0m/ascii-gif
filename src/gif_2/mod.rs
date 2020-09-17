@@ -34,6 +34,21 @@ pub struct Frame {
     pub image_descriptor: ImageDescriptor,
     pub local_color_map: Option<ColorMap>,
     pub raster_data: Vec<u8>,
+    pub graphic_control_extension: Option<GraphicControlExtension>,
+}
+
+#[derive(Debug)]
+pub enum ExtensionBlock {
+    GraphicControlExtension(GraphicControlExtension),
+}
+
+#[derive(Debug)]
+pub struct GraphicControlExtension {
+    pub disposal_method: u8,
+    pub user_input: bool,
+    pub transparent_color: bool,
+    pub delay_time: u16,
+    pub transparent_color_index: Option<u8>,
 }
 
 #[derive(Debug)]
