@@ -8,6 +8,7 @@ use std::io::Read;
 use std::path::Path;
 use std::str::from_utf8;
 
+#[derive(PartialEq)]
 pub enum ColorOutput {
     RGBA,
     ColorMap,
@@ -15,28 +16,27 @@ pub enum ColorOutput {
 
 pub fn decode(
     mut source: impl Read,
-    color: ColorOutput,
+    color_output: ColorOutput,
 ) -> Result<gif_2::Gif, Box<dyn std::error::Error>> {
     let bytes: &mut Vec<u8> = &mut Vec::new();
     source.read_to_end(bytes)?;
 
-    dbg!(bytes.len());
-
     let (signature, cursor) = signature(&bytes, 0);
-    let (screen_descriptor, cursor) = screen_descriptor(&bytes, cursor);
-    let (global_color_map, cursor) =
+    let (mut screen_descriptor, cursor) = screen_descriptor(&bytes, cursor);
+    let (mut global_color_map, cursor) =
         color_map(&bytes, screen_descriptor.pixel, screen_descriptor.m, cursor);
     let (mut frames, _cursor) = frames(bytes, cursor);
 
-    match color {
-        ColorOutput::RGBA => {
-            for frame in &mut frames {
-                let rgba_raster_data = rgba_raster_data(&frame, global_color_map.as_ref());
-                frame.raster_data = rgba_raster_data;
-            }
+    if color_output == ColorOutput::RGBA {
+        for frame in &mut frames {
+            let rgba_raster_data = rgba_raster_data(&frame, global_color_map.as_ref());
+            frame.raster_data = rgba_raster_data;
+            frame.local_color_map = None;
+            frame.image_descriptor.m = false;
         }
-        ColorOutput::ColorMap => {}
-    };
+        screen_descriptor.m = false;
+        global_color_map = None;
+    }
 
     Ok(gif_2::Gif {
         signature: signature.to_string(),
