@@ -1,58 +1,55 @@
 use crate::gif_2;
-use crate::gif_2::{ColorMap, ExtensionBlock};
-use bytes::buf::ext::Reader;
-use bytes::buf::BufExt;
-use bytes::Buf;
 use lzw::LsbReader;
 use std::collections::HashMap;
+#[cfg(test)]
 use std::fs::File;
-use std::io::{BufRead, BufReader, Read};
+use std::io::Read;
+#[cfg(test)]
 use std::path::Path;
 use std::str::from_utf8;
 
-pub struct Decoder {}
-
-pub enum Color {
+pub enum ColorOutput {
     RGBA,
     ColorMap,
 }
 
-impl Decoder {
-    pub fn decode(
-        mut source: impl Read,
-        color: Color,
-    ) -> Result<gif_2::Gif, Box<dyn std::error::Error>> {
-        let bytes: &mut Vec<u8> = &mut Vec::new();
-        source.read_to_end(bytes)?;
+pub fn decode(
+    mut source: impl Read,
+    color: ColorOutput,
+) -> Result<gif_2::Gif, Box<dyn std::error::Error>> {
+    let bytes: &mut Vec<u8> = &mut Vec::new();
+    source.read_to_end(bytes)?;
 
-        dbg!(bytes.len());
+    dbg!(bytes.len());
 
-        let (signature, cursor) = signature(&bytes, 0);
-        let (screen_descriptor, cursor) = screen_descriptor(&bytes, cursor);
-        let (global_color_map, cursor) =
-            color_map(&bytes, screen_descriptor.pixel, screen_descriptor.m, cursor);
-        let (mut frames, _cursor) = frames(bytes, cursor);
+    let (signature, cursor) = signature(&bytes, 0);
+    let (screen_descriptor, cursor) = screen_descriptor(&bytes, cursor);
+    let (global_color_map, cursor) =
+        color_map(&bytes, screen_descriptor.pixel, screen_descriptor.m, cursor);
+    let (mut frames, _cursor) = frames(bytes, cursor);
 
-        match color {
-            Color::RGBA => {
-                for frame in &mut frames {
-                    let rgba_raster_data = rgba_raster_data(&frame, global_color_map.as_ref());
-                    frame.raster_data = rgba_raster_data;
-                }
+    match color {
+        ColorOutput::RGBA => {
+            for frame in &mut frames {
+                let rgba_raster_data = rgba_raster_data(&frame, global_color_map.as_ref());
+                frame.raster_data = rgba_raster_data;
             }
-            Color::ColorMap => {}
-        };
+        }
+        ColorOutput::ColorMap => {}
+    };
 
-        Ok(gif_2::Gif {
-            signature: signature.to_string(),
-            screen_descriptor,
-            global_color_map,
-            frames,
-        })
-    }
+    Ok(gif_2::Gif {
+        signature: signature.to_string(),
+        screen_descriptor,
+        global_color_map,
+        frames,
+    })
 }
 
-pub fn rgba_raster_data(frame: &gif_2::Frame, global_color_map: Option<&ColorMap>) -> Vec<u8> {
+pub fn rgba_raster_data(
+    frame: &gif_2::Frame,
+    global_color_map: Option<&gif_2::ColorMap>,
+) -> Vec<u8> {
     let color_map = if frame.image_descriptor.m {
         frame
             .local_color_map
@@ -81,7 +78,7 @@ pub fn rgba_raster_data(frame: &gif_2::Frame, global_color_map: Option<&ColorMap
 
 pub fn table_index_to_rgba(
     index: u8,
-    color_map: &ColorMap,
+    color_map: &gif_2::ColorMap,
     maybe_transparent_color_index: Option<u8>,
 ) -> Vec<u8> {
     let rgba = color_map
@@ -317,7 +314,7 @@ pub fn graphic_control_extension(
 #[test]
 pub fn should_decode() {
     let file = &mut File::open(Path::new("./ascii-gif-example.gif")).unwrap();
-    let gif = Decoder::decode(file, Color::ColorMap).unwrap();
+    let gif = decode(file, ColorOutput::ColorMap).unwrap();
 
     assert_eq!("GIF89a", gif.signature);
     assert_eq!(106, gif.frames.len());

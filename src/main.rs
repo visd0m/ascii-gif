@@ -1,6 +1,5 @@
 use crate::cli::{Cli, CliError};
 use crate::http::get;
-use gif::{ColorOutput, Decoder, SetParameter};
 use hyper::client::HttpConnector;
 use hyper::Client;
 use hyper_tls::HttpsConnector;
@@ -46,9 +45,9 @@ async fn main() {
     //     frames.push((frame, &args.encoding).into())
     // }
 
-    let gif = crate::gif_2::decoder::Decoder::decode(
+    let gif = crate::gif_2::decoder::decode(
         get(&client, &url).await.unwrap(),
-        gif_2::decoder::Color::RGBA,
+        gif_2::decoder::ColorOutput::RGBA,
     )
     .expect("error decoding gif");
 
