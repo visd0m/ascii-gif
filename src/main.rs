@@ -35,18 +35,34 @@ async fn main() {
     }
     .expect("Error retrieving gif");
 
-    let mut decoder = Decoder::new(get(&client, &url).await.unwrap());
-    decoder.set(ColorOutput::RGBA);
-    let mut decoder = decoder.read_info().unwrap();
-    let gif_width = decoder.width().clone();
-    let gif_height = decoder.height().clone();
+    // let mut decoder = Decoder::new(get(&client, &url).await.unwrap());
+    // decoder.set(ColorOutput::RGBA);
+    // let mut decoder = decoder.read_info().unwrap();
+    // let gif_width = decoder.width().clone();
+    // let gif_height = decoder.height().clone();
+    //
+    // let mut frames: Vec<ascii::gif::frame::Frame> = Vec::new();
+    // while let Some(frame) = decoder.read_next_frame().unwrap() {
+    //     frames.push((frame, &args.encoding).into())
+    // }
 
-    let mut frames: Vec<ascii::gif::frame::Frame> = Vec::new();
-    while let Some(frame) = decoder.read_next_frame().unwrap() {
-        frames.push((frame, &args.encoding).into())
-    }
+    let gif = crate::gif_2::decoder::Decoder::decode(
+        get(&client, &url).await.unwrap(),
+        gif_2::decoder::Color::RGBA,
+    )
+    .expect("error decoding gif");
 
-    let ascii_gif = ascii::gif::Gif::new(frames, gif_width, gif_height);
+    let gif_width = gif.screen_descriptor.width;
+    let gif_height = gif.screen_descriptor.height;
+
+    let encoding = &args.encoding;
+    let ascii_frames: Vec<ascii::gif::frame::Frame> = gif
+        .frames
+        .iter()
+        .map(|frame| (frame, encoding).into())
+        .collect();
+
+    let ascii_gif = ascii::gif::Gif::new(ascii_frames, gif_width, gif_height);
 
     let mut player = ascii::gif::player::Player::new(
         min(h as u16, gif_height),

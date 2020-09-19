@@ -1,24 +1,47 @@
 use crate::gif_2;
-use crate::gif_2::ExtensionBlock;
+use crate::gif_2::{ColorMap, ExtensionBlock};
+use bytes::buf::ext::Reader;
+use bytes::buf::BufExt;
+use bytes::Buf;
 use lzw::LsbReader;
 use std::collections::HashMap;
 use std::fs::File;
-use std::io::Read;
+use std::io::{BufRead, BufReader, Read};
 use std::path::Path;
 use std::str::from_utf8;
 
 pub struct Decoder {}
 
+pub enum Color {
+    RGBA,
+    ColorMap,
+}
+
 impl Decoder {
-    pub fn decode(source: &mut impl Read) -> Result<gif_2::Gif, Box<dyn std::error::Error>> {
+    pub fn decode(
+        mut source: impl Read,
+        color: Color,
+    ) -> Result<gif_2::Gif, Box<dyn std::error::Error>> {
         let bytes: &mut Vec<u8> = &mut Vec::new();
         source.read_to_end(bytes)?;
+
+        dbg!(bytes.len());
 
         let (signature, cursor) = signature(&bytes, 0);
         let (screen_descriptor, cursor) = screen_descriptor(&bytes, cursor);
         let (global_color_map, cursor) =
             color_map(&bytes, screen_descriptor.pixel, screen_descriptor.m, cursor);
-        let (frames, _cursor) = frames(bytes, cursor);
+        let (mut frames, _cursor) = frames(bytes, cursor);
+
+        match color {
+            Color::RGBA => {
+                for frame in &mut frames {
+                    let rgba_raster_data = rgba_raster_data(&frame, global_color_map.as_ref());
+                    frame.raster_data = rgba_raster_data;
+                }
+            }
+            Color::ColorMap => {}
+        };
 
         Ok(gif_2::Gif {
             signature: signature.to_string(),
@@ -27,6 +50,48 @@ impl Decoder {
             frames,
         })
     }
+}
+
+pub fn rgba_raster_data(frame: &gif_2::Frame, global_color_map: Option<&ColorMap>) -> Vec<u8> {
+    let color_map = if frame.image_descriptor.m {
+        frame
+            .local_color_map
+            .as_ref()
+            .expect("expected local color map not present")
+    } else {
+        global_color_map.expect("expected global color map not present")
+    };
+
+    frame
+        .raster_data
+        .iter()
+        .map(|index| {
+            table_index_to_rgba(
+                *index,
+                color_map,
+                frame
+                    .graphic_control_extension
+                    .as_ref()
+                    .and_then(|ext| ext.transparent_color_index),
+            )
+        })
+        .flatten()
+        .collect()
+}
+
+pub fn table_index_to_rgba(
+    index: u8,
+    color_map: &ColorMap,
+    maybe_transparent_color_index: Option<u8>,
+) -> Vec<u8> {
+    let rgba = color_map
+        .get(&(index as usize))
+        .expect("pixel index not found in color map");
+    let alpha = maybe_transparent_color_index
+        .filter(|alpha_index| index == *alpha_index)
+        .map(|_| 0x00u8)
+        .unwrap_or(0xFFu8);
+    vec![rgba.r, rgba.g, rgba.b, alpha]
 }
 
 pub fn signature(bytes: &Vec<u8>, cursor: usize) -> (String, usize) {
@@ -252,7 +317,7 @@ pub fn graphic_control_extension(
 #[test]
 pub fn should_decode() {
     let file = &mut File::open(Path::new("./ascii-gif-example.gif")).unwrap();
-    let gif = Decoder::decode(file).unwrap();
+    let gif = Decoder::decode(file, Color::ColorMap).unwrap();
 
     assert_eq!("GIF89a", gif.signature);
     assert_eq!(106, gif.frames.len());
