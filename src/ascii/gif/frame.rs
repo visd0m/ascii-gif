@@ -33,8 +33,8 @@ impl From<(&gif_2::Frame, &Encoding)> for Frame {
             delay: frame
                 .graphic_control_extension
                 .as_ref()
-                .expect("graphic control extension not found")
-                .delay_time,
+                .map(|block| block.delay_time)
+                .unwrap_or(100u16),
             top: frame.image_descriptor.image_top,
             left: frame.image_descriptor.image_left,
         }
