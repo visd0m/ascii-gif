@@ -1,6 +1,4 @@
 use crate::ascii::symbol::{Encoding, Symbol};
-use crate::gif_2;
-use std::borrow::Cow;
 
 pub struct Frame {
     pub width: u16,
@@ -11,25 +9,12 @@ pub struct Frame {
     pub left: u16,
 }
 
-impl From<(&gif::Frame<'_>, &Encoding)> for Frame {
-    fn from((frame, encoding): (&gif::Frame<'_>, &Encoding)) -> Self {
-        Self {
-            width: frame.width,
-            height: frame.height,
-            buffer: to_text_frame(&frame.buffer, encoding),
-            delay: frame.delay,
-            top: frame.top,
-            left: frame.left,
-        }
-    }
-}
-
-impl From<(&gif_2::Frame, &Encoding)> for Frame {
-    fn from((frame, encoding): (&gif_2::Frame, &Encoding)) -> Self {
+impl From<(&yaged::types::Frame, &Encoding)> for Frame {
+    fn from((frame, encoding): (&yaged::types::Frame, &Encoding)) -> Self {
         Self {
             width: frame.image_descriptor.image_width,
             height: frame.image_descriptor.image_height,
-            buffer: to_text_frame_2(&frame.raster_data, encoding),
+            buffer: to_text_frame(&frame.raster_data, encoding),
             delay: frame
                 .graphic_control_extension
                 .as_ref()
@@ -41,15 +26,7 @@ impl From<(&gif_2::Frame, &Encoding)> for Frame {
     }
 }
 
-fn to_text_frame_2(buffer: &Vec<u8>, encoding: &Encoding) -> Vec<Symbol> {
-    buffer
-        .chunks(4)
-        .map(|bytes| (bytes[0], bytes[1], bytes[2], bytes[3]))
-        .map(|rgba| Symbol::from((rgba, encoding)))
-        .collect::<Vec<Symbol>>()
-}
-
-fn to_text_frame(buffer: &Cow<[u8]>, encoding: &Encoding) -> Vec<Symbol> {
+fn to_text_frame(buffer: &Vec<u8>, encoding: &Encoding) -> Vec<Symbol> {
     buffer
         .chunks(4)
         .map(|bytes| (bytes[0], bytes[1], bytes[2], bytes[3]))

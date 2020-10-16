@@ -9,7 +9,6 @@ use url::form_urlencoded::byte_serialize;
 
 pub mod ascii;
 pub mod cli;
-pub mod gif_2;
 pub mod giphy;
 pub mod http;
 pub mod postprocessor;
@@ -45,9 +44,9 @@ async fn main() {
     //     frames.push((frame, &args.encoding).into())
     // }
 
-    let gif = crate::gif_2::decoder::decode(
+    let gif = yaged::decoder::decode(
         get(&client, &url).await.unwrap(),
-        gif_2::decoder::ColorOutput::RGBA,
+        yaged::decoder::ColorOutput::RGBA,
     )
     .expect("error decoding gif");
 
