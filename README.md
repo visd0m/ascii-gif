@@ -40,6 +40,4 @@ asci-gif --id "U2nN0ridM4lXy" --giphy --encoding 70
 ---
 todos
 - enhance ascii transformation (choose better characters / enrich characters)
-- <s>stop cropping gifs</s>
-- <s>cli arguments enhancement</s>
 - turn code into better rust
