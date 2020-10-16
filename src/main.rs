@@ -33,17 +33,6 @@ async fn main() {
     }
     .expect("Error retrieving gif");
 
-    // let mut decoder = Decoder::new(get(&client, &url).await.unwrap());
-    // decoder.set(ColorOutput::RGBA);
-    // let mut decoder = decoder.read_info().unwrap();
-    // let gif_width = decoder.width().clone();
-    // let gif_height = decoder.height().clone();
-    //
-    // let mut frames: Vec<ascii::gif::frame::Frame> = Vec::new();
-    // while let Some(frame) = decoder.read_next_frame().unwrap() {
-    //     frames.push((frame, &args.encoding).into())
-    // }
-
     let gif = yaged::decoder::decode(
         get(&client, &url).await.unwrap(),
         yaged::decoder::ColorOutput::RGBA,
