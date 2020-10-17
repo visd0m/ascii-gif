@@ -1051,7 +1051,8 @@ dependencies = [
 [[package]]
 name = "yaged"
 version = "0.1.0"
-source = "git+https://github.com/visd0m/yaged?branch=main#f5fc65207a8e636ed5b3e331f8ddc759256d16bf"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7d065a70563c3b16aaf9d4f9e92c7260a81738e715ee629bb7fa8b2a60f434f7"
 dependencies = [
  "lzw",
 ]
