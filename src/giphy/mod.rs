@@ -21,7 +21,7 @@ impl<'a> Giphy<'a> {
         }
     }
 
-    pub async fn random(&self, tag: &String) -> Result<Random, Box<dyn std::error::Error>> {
+    pub async fn random(&self, tag: &str) -> Result<Random, Box<dyn std::error::Error>> {
         let url = format!(
             "{}/random?api_key={}&tag={}&rating=g",
             BASE_URL, self.apikey, tag
@@ -33,7 +33,7 @@ impl<'a> Giphy<'a> {
 
     pub async fn search(
         &self,
-        search: &String,
+        search: &str,
         limit: i32,
     ) -> Result<Search, Box<dyn std::error::Error>> {
         let url = format!(
@@ -45,7 +45,7 @@ impl<'a> Giphy<'a> {
         Ok(search)
     }
 
-    pub async fn by_id(&self, id: &String) -> Result<Random, Box<dyn std::error::Error>> {
+    pub async fn by_id(&self, id: &str) -> Result<Random, Box<dyn std::error::Error>> {
         let url = format!("{}/{}?api_key={}", BASE_URL, id, self.apikey);
 
         let by_id = serde_json::from_reader(get(&self.http_client, &url).await?)?;

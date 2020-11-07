@@ -94,7 +94,7 @@ impl Player {
         );
     }
 
-    fn update_display_buffer(&mut self, top: u16, left: u16, new_buffer: &Vec<Symbol>, width: u16) {
+    fn update_display_buffer(&mut self, top: u16, left: u16, new_buffer: &[Symbol], width: u16) {
         new_buffer
             .chunks(width as usize)
             .enumerate()

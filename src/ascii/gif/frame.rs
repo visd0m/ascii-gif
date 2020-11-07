@@ -26,7 +26,7 @@ impl From<(&yaged::types::Frame, &Encoding)> for Frame {
     }
 }
 
-fn to_text_frame(buffer: &Vec<u8>, encoding: &Encoding) -> Vec<Symbol> {
+fn to_text_frame(buffer: &[u8], encoding: &Encoding) -> Vec<Symbol> {
     buffer
         .chunks(4)
         .map(|bytes| (bytes[0], bytes[1], bytes[2], bytes[3]))

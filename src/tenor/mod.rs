@@ -32,7 +32,7 @@ impl<'a> Tenor<'a> {
         Ok(search)
     }
 
-    pub async fn random(&self, q: &String, limit: i32) -> Result<Search, Box<dyn Error>> {
+    pub async fn random(&self, q: &str, limit: i32) -> Result<Search, Box<dyn Error>> {
         let url = format!(
             "{}/random?q={}&key={}&limit={}",
             BASE_URL, q, self.apikey, limit
@@ -42,7 +42,7 @@ impl<'a> Tenor<'a> {
         Ok(search)
     }
 
-    pub async fn by_id(&self, id: &String) -> Result<Search, Box<dyn std::error::Error>> {
+    pub async fn by_id(&self, id: &str) -> Result<Search, Box<dyn std::error::Error>> {
         let url = format!("{}/gifs?ids={}&key={}", BASE_URL, id, self.apikey);
 
         let by_id = serde_json::from_reader(get(&self.http_client, &url).await?)?;
