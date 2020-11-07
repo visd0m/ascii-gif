@@ -12,16 +12,16 @@ pub struct Frame {
 impl From<(&yaged::types::Frame, &Encoding)> for Frame {
     fn from((frame, encoding): (&yaged::types::Frame, &Encoding)) -> Self {
         Self {
-            width: frame.image_descriptor.image_width,
-            height: frame.image_descriptor.image_height,
-            buffer: to_text_frame(&frame.raster_data, encoding),
+            width: frame.image_descriptor().image_width(),
+            height: frame.image_descriptor().image_height(),
+            buffer: to_text_frame(&frame.rgba_raster_data().as_ref().unwrap(), encoding),
             delay: frame
-                .graphic_control_extension
+                .graphic_control_extension()
                 .as_ref()
-                .map(|block| block.delay_time)
+                .map(|block| block.delay_time())
                 .unwrap_or(100u16),
-            top: frame.image_descriptor.image_top,
-            left: frame.image_descriptor.image_left,
+            top: frame.image_descriptor().image_top(),
+            left: frame.image_descriptor().image_left(),
         }
     }
 }

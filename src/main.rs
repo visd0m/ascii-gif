@@ -39,12 +39,12 @@ async fn main() {
     )
     .expect("error decoding gif");
 
-    let gif_width = gif.screen_descriptor.width;
-    let gif_height = gif.screen_descriptor.height;
+    let gif_width = gif.screen_descriptor().width();
+    let gif_height = gif.screen_descriptor().height();
 
     let encoding = &args.encoding;
     let ascii_frames: Vec<ascii::gif::frame::Frame> = gif
-        .frames
+        .frames()
         .iter()
         .map(|frame| (frame, encoding).into())
         .collect();
