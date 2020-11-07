@@ -156,7 +156,7 @@ fn gray_value(r: u8, g: u8, b: u8) -> u8 {
 }
 
 pub fn to_string(
-    symbols: &Vec<Symbol>,
+    symbols: &[Symbol],
     lines: usize,
     columns: usize,
     max_lines: usize,
@@ -168,20 +168,18 @@ pub fn to_string(
         .collect::<Vec<String>>()
         .chunks(columns)
         .map(|x| x[0..min(max_columns as usize, columns as usize)].to_vec())
-        .map(|x| format!("{}", x.join("")))
+        .map(|x| x.join(""))
         .take(min(max_lines as usize, lines as usize))
         .collect::<Vec<String>>()
         .join("\n")
 }
 
 fn map_to_10_ascii_chars(g_value: u8) -> String {
-    let index = ((g_value as f64 / 25.5).floor() - 1 as f64) as usize;
-    let symbol = ASCII_MAPPING_10[index as usize].clone();
-    symbol
+    let index = ((g_value as f64 / 25.5).floor() - 1_f64) as usize;
+    ASCII_MAPPING_10[index as usize].clone()
 }
 
 fn map_to_70_ascii_chars(g_value: u8) -> String {
-    let index = ((g_value as f64 / 3.64).floor() - 1 as f64) as usize;
-    let symbol = ASCII_MAPPING_70[index as usize].clone();
-    symbol
+    let index = ((g_value as f64 / 3.64).floor() - 1_f64) as usize;
+    ASCII_MAPPING_70[index as usize].clone()
 }

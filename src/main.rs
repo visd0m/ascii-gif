@@ -39,12 +39,12 @@ async fn main() {
     )
     .expect("error decoding gif");
 
-    let gif_width = gif.screen_descriptor.width;
-    let gif_height = gif.screen_descriptor.height;
+    let gif_width = gif.screen_descriptor().width();
+    let gif_height = gif.screen_descriptor().height();
 
     let encoding = &args.encoding;
     let ascii_frames: Vec<ascii::gif::frame::Frame> = gif
-        .frames
+        .frames()
         .iter()
         .map(|frame| (frame, encoding).into())
         .collect();
@@ -71,25 +71,23 @@ async fn giphy(
 
     match (q, id) {
         (Some(q), _) => Ok(giphy
-            .random(&byte_serialize(q.as_bytes()).collect())
+            .random(&byte_serialize(q.as_bytes()).collect::<String>())
             .await
             .expect("no results found using giphy")
             .data
             .images
             .fixed_width_small
             .url
-            .expect("no url for preview_gif using giphy")
-            .clone()),
+            .expect("no url for preview_gif using giphy")),
         (_, Some(id)) => Ok(giphy
-            .by_id(&byte_serialize(id.as_bytes()).collect())
+            .by_id(&byte_serialize(id.as_bytes()).collect::<String>())
             .await
             .expect("no results fodun using giphy")
             .data
             .images
             .fixed_width_small
             .url
-            .expect("no url for preview_gif using giphy")
-            .clone()),
+            .expect("no url for preview_gif using giphy")),
         (None, None) => Err(Box::new(CliError::WrongParameters)),
     }
 }
@@ -104,7 +102,7 @@ async fn tenor(
 
     match (q, id) {
         (Some(q), _) => Ok(tenor
-            .random(&byte_serialize(q.as_bytes()).collect(), 1)
+            .random(&byte_serialize(q.as_bytes()).collect::<String>(), 1)
             .await
             .expect("no results found using tenor")
             .results
@@ -117,7 +115,7 @@ async fn tenor(
             .url
             .clone()),
         (_, Some(id)) => Ok(tenor
-            .by_id(&byte_serialize(id.as_bytes()).collect())
+            .by_id(&byte_serialize(id.as_bytes()).collect::<String>())
             .await
             .expect("no results found using tenor")
             .results
