@@ -1,8 +1,8 @@
 use crate::ascii::symbol::Encoding;
-use serde::export::Formatter;
 use std::error::Error;
-use std::fmt;
 use std::fmt::Display;
+use std::fmt::Formatter;
+use std::fmt::Result;
 use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
@@ -27,7 +27,7 @@ pub enum CliError {
 impl Error for CliError {}
 
 impl Display for CliError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         write!(f, "{}", self)
     }
 }
