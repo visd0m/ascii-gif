@@ -1,5 +1,4 @@
-use bytes::buf::ext::Reader;
-use bytes::buf::BufExt;
+use bytes::buf::Reader;
 use hyper::body::Buf;
 use hyper::client::HttpConnector;
 use hyper::{Client, Uri};
