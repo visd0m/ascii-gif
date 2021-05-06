@@ -15,16 +15,16 @@ cargo install ascii-gif
 #### Examples
 ```bash
 # retrieve a gif using tenor random api and querying "pikachu"
-asci-gif --query "pikachu" --tenor
+ascii-gif --query "pikachu" --tenor
 
 # retrieve a gif using tenor random api and querying "pikachu"
-asci-gif --query "pikachu" --giphy
+ascii-gif --query "pikachu" --giphy
 
 # retrieve the gif with id 15452657 using tenor api
-asci-gif --id "15452657" --tenor
+ascii-gif --id "15452657" --tenor
 
 # retrieve the gif with id U2nN0ridM4lXy using giphy api
-asci-gif --id "U2nN0ridM4lXy" --giphy
+ascii-gif --id "U2nN0ridM4lXy" --giphy
 ```
 
 #### Ascii encoding
@@ -32,7 +32,7 @@ The ascii encoding can be performed using 10 or 70 characters.
 The default encoding uses 10 characters.
 It is possible to use 70 characters encoding using the `--encoding` parameter
 ```bash
-asci-gif --id "U2nN0ridM4lXy" --giphy --encoding 70
+ascii-gif --id "U2nN0ridM4lXy" --giphy --encoding 70
 ``` 
 
 #### Still a "work in progress" project
